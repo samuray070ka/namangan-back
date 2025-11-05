@@ -1,5 +1,10 @@
 import express from "express";
-import { getUnicorns, createUnicorn, deleteUnicorn, updateUnicorn } from "../controllers/unicornController.js";
+import {
+  getUnicorns,
+  createUnicorn,
+  updateUnicorn,
+  deleteUnicorn,
+} from "../controllers/unicornController.js";
 
 const router = express.Router();
 
