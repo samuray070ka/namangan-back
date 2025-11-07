@@ -71,20 +71,19 @@ export const updateUnicorn = async (req, res) => {
   }
 };
 
-// YANGI: Tuman bo'yicha qishloqlarni olish (district sahifasi uchun – filtr kuchaytirildi)
-// YANGI: Tuman bo'yicha qishloqlarni olish (case‑insensitive)
 export const getLocationsByDistrict = async (req, res) => {
   try {
     const { district } = req.params;
 
-    // 1. URL‑dan kelgan qiymatni katta‑kichik harfga o‘tkazamiz
-    const normalized = district.trim();                 // " pop " → "pop"
-    const regex = new RegExp(`^${normalized}$`, "i");   // /pop/i  → Pop, POP, pop
+    // 1. URL‑dagi “‑” ni bo‘sh joyga almashtiramiz
+    const dbDistrict = district.replace(/-/g, "").trim(); // namangan-sh → Namangan sh
 
-    console.log("Qidirilayotgan district (regex):", regex); // debug
+    const regex = new RegExp(`^${dbDistrict}$`, "i"); // case‑insensitive
+
+    console.log("Qidirilayotgan district (DB format):", dbDistrict, "regex:", regex);
 
     const locations = await Unicorn.aggregate([
-      { $match: { district: regex } },                 // <-- case‑insensitive
+      { $match: { district: regex } },
       {
         $group: {
           _id: "$location",
@@ -96,7 +95,7 @@ export const getLocationsByDistrict = async (req, res) => {
       { $sort: { _id: 1 } }
     ]);
 
-    console.log("Topilgan qishloqlar:", locations); // debug
+    console.log("Topilgan qishloqlar:", locations);
 
     if (locations.length === 0) {
       return res.status(404).json({ message: "Bu tuman uchun qishloq topilmadi" });
@@ -108,7 +107,6 @@ export const getLocationsByDistrict = async (req, res) => {
     res.status(500).json({ message: "Server xatosi", error: error.message });
   }
 };
-
 // YANGI: Qishloq bo'yicha MChJ'larni olish (unicpage uchun – filtr kuchaytirildi)
 export const getUnicornsByLocation = async (req, res) => {
   try {
