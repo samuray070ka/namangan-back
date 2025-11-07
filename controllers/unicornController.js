@@ -71,16 +71,23 @@ export const updateUnicorn = async (req, res) => {
   }
 };
 
+// controllers/unicornController.js
 export const getLocationsByDistrict = async (req, res) => {
   try {
-    const { district } = req.params;
+    let { district } = req.params;
 
-    // 1. URL‑dagi “‑” ni bo‘sh joyga almashtiramiz
-    const dbDistrict = district.replace(/-/g, "").trim(); // namangan-sh → Namangan sh
+    // URL decode (%20 → bo'sh joy)
+    district = decodeURIComponent(district);
 
-    const regex = new RegExp(`^${dbDistrict}$`, "i"); // case‑insensitive
+    // Normallashtirish: - va bo'sh joylarni tozalash
+    const dbDistrict = district
+      .replace(/-/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
 
-    console.log("Qidirilayotgan district (DB format):", dbDistrict, "regex:", regex);
+    const regex = new RegExp(`^${dbDistrict}$`, "i");
+
+    console.log("URL:", req.params.district, "→ DB:", dbDistrict);
 
     const locations = await Unicorn.aggregate([
       { $match: { district: regex } },
@@ -94,8 +101,6 @@ export const getLocationsByDistrict = async (req, res) => {
       },
       { $sort: { _id: 1 } }
     ]);
-
-    console.log("Topilgan qishloqlar:", locations);
 
     if (locations.length === 0) {
       return res.status(404).json({ message: "Bu tuman uchun qishloq topilmadi" });
