@@ -1,12 +1,11 @@
-// Backend Update: Unicorn Model va Controller'ga "location" qo'shish (Village uchun)
-// models/unicornModel.js (O'zgartirilgan)
+// models/unicornModel.js (To'g'ri, o'zgarishsiz – location va district bor)
 import mongoose from "mongoose";
 
 const unicornSchema = new mongoose.Schema(
   {
-    district: { type: String, required: true }, // Tuman nomi
-    location: { type: String, required: true }, // Qishloq nomi (yangi)
-    title: { type: String, required: true },    // Sub-mahsulot nomi (MChJ)
+    district: { type: String, required: true }, // Tuman nomi (masalan, "Pop", "Chust")
+    location: { type: String, required: true }, // Qishloq nomi (masalan, "Chust", "Pop-shaharcha")
+    title: { type: String, required: true },    // MChJ nomi
     desc: { type: String, required: true },     // Izoh
     image: { type: String, default: "" },       // Rasm
     date: { type: String, required: true },     // Sana
